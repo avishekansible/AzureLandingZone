@@ -1,0 +1,122 @@
+trigger:
+ - azure-pipeline
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+parameters:
+  - name: components
+    type: object
+    default:
+     - 00.BootstrapModule
+     - 01.Core_Infrastructure_Module
+     - 02.network_module
+     - 09.LoggingMonitoring
+
+resources:
+  repositories:
+  - repository: atomic-code
+    type: git
+    name: Azure-MVC/atomic-code
+
+variables:
+- group: Pipeline-vars
+
+stages:
+- stage: "validateTerraform"
+  displayName: "Terraform > install"
+  jobs:
+   - job: 
+     continueOnError: false
+     steps:
+     - checkout: self
+       persistCredentials: true
+       path: components
+       clean: true
+       fetchDepth: 1
+     - checkout: atomic-code
+       persistCredentials: true
+       path: atomic-code
+       clean: true
+       fetchDepth: 1
+     - task: TerraformInstaller@0
+       displayName: Install
+       inputs:
+         terraformVersion: $(TerraformVersion)
+
+- stage: Approval
+  displayName: "Terraform < init, validate, plan, apply"
+  jobs:
+  - deployment: BuildResources
+    displayName: "Build Azure Resources in Azure Portal"
+    environment: smarthotel-dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+              persistCredentials: true
+              path: components
+              clean: true
+              fetchDepth: 1
+            - checkout: atomic-code
+              persistCredentials: true
+              path: atomic-code
+              clean: true
+              fetchDepth: 1
+            - bash: |
+                git config --global url."https://$(System.AccessToken)@dev.azure.com/HPE-MVC/Azure-MVC/_git/atomic-code".insteadOf "https://HPE-MVC@dev.azure.com/HPE-MVC/Azure-MVC/_git/atomic-code"
+
+            - ${{ each filename in parameters.components }}:
+              - script: |
+                    sudo apt-get update -y
+                    sudo apt-get install -y dos2unix
+                    dos2unix $(Pipeline.WorkSpace)/components/Config/main.rc
+                    dos2unix $(Pipeline.WorkSpace)/components/Config/CoreInfra.rc
+                    dos2unix $(Pipeline.WorkSpace)/components/Config/LoggingMonitoring.rc
+                    dos2unix $(Pipeline.WorkSpace)/components/Config/networkModule.rc
+                    dos2unix $(Pipeline.WorkSpace)/components/Config/BootstrapModule.rc
+                    source '$(Pipeline.WorkSpace)/components/Config/main.rc'
+                    source '$(Pipeline.WorkSpace)/components/Config/CoreInfra.rc'
+                    source '$(Pipeline.WorkSpace)/components/Config/LoggingMonitoring.rc'
+                    source '$(Pipeline.WorkSpace)/components/Config/networkModule.rc'
+                    source '$(Pipeline.WorkSpace)/components/Config/BootstrapModule.rc'
+                    chmod +x $(Pipeline.WorkSpace)/components/${{ filename }}/vars/${{ filename }}Vars.sh
+                    $(Pipeline.WorkSpace)/components/${{ filename }}/vars/${{ filename }}Vars.sh
+                    ls $(Pipeline.WorkSpace)/s
+              - script: cat $(Pipeline.WorkSpace)/s/terraform.tfvars
+              - task: TerraformTaskV2@2
+                displayName: Init on ${{ filename }}
+                inputs:
+                  provider: 'azurerm'
+                  command: 'init'
+                  workingDirectory: '$(Pipeline.WorkSpace)/components/${{ filename }}'
+                  backendServiceArm: $(ServicePrincipleName)
+                  backendAzureRmResourceGroupName: $(ResourceGroupName)
+                  backendAzureRmStorageAccountName: $(StorageAccountName)
+                  backendAzureRmContainerName: $(ContainerName)
+                  backendAzureRmKey: $(tfstateFileName)
+              - task: TerraformTaskV2@2
+                displayName: Validate on ${{ filename }}
+                inputs:
+                  provider: 'azurerm'
+                  command: 'validate'
+              
+              - task: TerraformTaskV2@2
+                displayName: Plan on ${{ filename }}
+                inputs:
+                  provider: 'azurerm'
+                  command: 'plan'
+                  workingDirectory: '$(Pipeline.WorkSpace)/components/${{ filename }}'
+                  commandOptions: '-var-file=$(Pipeline.WorkSpace)/s/terraform.tfvars'
+                  environmentServiceNameAzureRM: '$(ServicePrincipleName)'
+
+              - task: TerraformTaskV2@2
+                displayName: Apply and Deploy
+                inputs:
+                    provider: 'azurerm'
+                    command: 'apply'
+                    workingDirectory: '$(Pipeline.WorkSpace)/components/${{ filename }}'
+                    commandOptions: '-var-file=$(Pipeline.WorkSpace)/s/terraform.tfvars'
+                    environmentServiceNameAzureRM: $(ServicePrincipleName)
+            
