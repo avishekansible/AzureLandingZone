@@ -1,0 +1,16 @@
+export bootstrap_rg_name="${org_name}-${location}-${business_unit}-${env}-bootstrap-rg"
+export bootstrap_sa_name="${org_name}${business_unit}sa"
+export account_tier="Standard"
+export account_replication_type="GRS"
+export account_type="Storage"
+export kv_name="${org_name}${business_unit}kv"
+export disk_encryption=false
+export tenant_id="105b2061-b669-4b31-92ac-24d304d195dc"
+export object_id="58290e6e-2df8-48b4-bd00-2e2973c104ee"
+export res_container_name="${org_name}-${location}-${business_unit}-${env}-sc"
+export res_access_type="private"
+export res_kvencrypt_name="${org_name}${business_unit}kvenc"
+export res_key_opts=[\"decrypt\",\"encrypt\",\"sign\",\"unwrapKey\",\"verify\",\"wrapKey\"]
+export res_key_permissions=[\"get\",\"create\",\"update\",\"import\",\"list\",\"backup\",\"restore\",\"recover\",\"unwrapkey\",\"wrapkey\",\"purge\",\"encrypt\",\"decrypt\",\"sign\",\"verify\",\"delete\"]
+export res_secret_permissions=[\"get\",\"set\"]
+export res_ses_name="${org_name}${business_unit}ses"

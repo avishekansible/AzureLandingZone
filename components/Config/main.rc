@@ -1,0 +1,5 @@
+export org_name="agn"
+export business_unit="com"
+export env="qa"
+export tags={env=\"dev\"}
+export location="eastus2"

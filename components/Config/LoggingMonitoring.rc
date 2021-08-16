@@ -1,0 +1,5 @@
+export omsla_name="${org_name}-${location}-${business_unit}-${env}-law"
+export omsla_rg_name="${org_name}-${location}-${business_unit}-${env}-law-rg"
+export omsla_sku="Free"
+export mon_diag_name="${org_name}-${location}-${business_unit}-${env}-mon"
+export mon_res_id=[\"/subscriptions/67cd5e43-3159-4a8b-87ac-965c240f1524/resourceGroups/myResourceGroup1/providers/Microsoft.Network/publicIPAddresses/myAKSPublicIP\"]

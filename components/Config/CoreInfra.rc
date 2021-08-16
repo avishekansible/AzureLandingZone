@@ -1,0 +1,2 @@
+export zone_name="mydomain.com"
+export core_infra_rg_name="${org_name}-${location}-${business_unit}-${env}-coreinfra-rg"

@@ -1,0 +1,20 @@
+cat <<EOF > terraform.tfvars
+rg_name="${bootstrap_rg_name}"
+location="${location}"
+tags=${tags}
+sa_name="${bootstrap_sa_name}"
+account_tier="${account_tier}"
+account_replication_type="${account_replication_type}"
+account_type="${account_type}"
+kv_name="${kv_name}"
+disk_encryption="${disk_encryption}"
+tenant_id="${tenant_id}"
+object_id="${object_id}"
+res_container_name="${res_container_name}"
+res_access_type="${res_access_type}"
+res_kvencrypt_name="${res_kvencrypt_name}"
+res_key_opts=${res_key_opts}
+res_key_permissions=${res_key_permissions}
+res_secret_permissions=${res_secret_permissions}
+res_ses_name="${res_ses_name}"
+EOF

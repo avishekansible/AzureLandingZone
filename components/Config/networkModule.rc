@@ -1,0 +1,89 @@
+export vnet_name="${org_name}-${location}-${business_unit}-${env}-vnet"
+export vnet_rg_name="${org_name}-${location}-${business_unit}-${env}-coreinfra-rg"
+export vnet_address_prefix=[\"10.0.0.0/16\"]
+export vent_dns_servers=[\"10.0.0.4\"]
+export subnets_info=[[\"testsubnet\",\"10.0.1.0/24\"]]
+export serv_endp=[\"Microsoft.Storage\",\"Microsoft.KeyVault\",\"Microsoft.Sql\",\"Microsoft.ServiceBus\"]
+export nw_sa_name="aviaccount"
+export nw_sa_rg_name="terraform-rg"
+export container_name="avicontainer"
+export nsg="{
+  nsg_1 = {
+    nsgs = {
+      rule1 = {
+        direction                  = \"Inbound\"
+        access                     = \"Allow\"
+        priority                   = 1001
+        protocol                   = \"TCP\"
+        source_port_range          = \"*\"
+        destination_port_range     = \"*\"
+        source_address_prefix      = \"*\"
+        destination_address_prefix = \"*\"
+      }
+      rule2 = {
+        direction                  = \"Inbound\"
+        access                     = \"Allow\"
+        priority                   = 1002
+        protocol                   = \"TCP\"
+        source_port_range          = \"*\"
+        destination_port_range     = \"*\"
+        source_address_prefix      = \"*\"
+        destination_address_prefix = \"*\"
+      }
+    }
+  },
+  nsg_2 = {
+    nsgs = {
+      rule1 = {
+        direction                  = \"Outbound\"
+        access                     = \"Allow\"
+        priority                   = 2001
+        protocol                   = \"TCP\"
+        source_port_range          = \"*\"
+        destination_port_range     = \"*\"
+        source_address_prefix      = \"*\"
+        destination_address_prefix = \"*\"
+      }
+      rule2 = {
+        direction                  = \"Outbound\"
+        access                     = \"Allow\"
+        priority                   = 2002
+        protocol                   = \"TCP\"
+        source_port_range          = \"*\"
+        destination_port_range     = \"*\"
+        source_address_prefix      = \"*\"
+        destination_address_prefix = \"*\"
+      }
+    }
+  }
+}"
+export udr="{
+  udr1 = {
+    routes = {
+      route-1 = {
+        address_prefix         = \"10.0.1.0/28\"
+        next_hop_type          = \"VirtualAppliance\"
+        next_hop_in_ip_address = \"10.0.1.5\"
+      },
+      route-2 = {
+        address_prefix         = \"10.0.2.0/28\"
+        next_hop_type          = \"VirtualAppliance\"
+        next_hop_in_ip_address = \"10.0.1.4\"
+      }
+    }
+  },
+  udr2 = {
+    routes = {
+      route-1 = {
+        address_prefix         = \"10.0.1.0/28\"
+        next_hop_type          = \"VirtualAppliance\"
+        next_hop_in_ip_address = \"10.0.1.5\"
+      },
+      route-2 = {
+        address_prefix         = \"10.0.2.0/28\"
+        next_hop_type          = \"VirtualAppliance\"
+        next_hop_in_ip_address = \"10.0.1.4\"
+      }
+    }
+  }
+}"
