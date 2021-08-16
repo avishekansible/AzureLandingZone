@@ -1,0 +1,3 @@
+output "res_out_container_name" {
+  value = azurerm_storage_container.container.name
+}

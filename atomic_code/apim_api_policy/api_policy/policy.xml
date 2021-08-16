@@ -1,0 +1,13 @@
+<policies>
+    <inbound>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+    <find-and-replace from="xyz" to="abc" />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

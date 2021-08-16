@@ -1,0 +1,68 @@
+{
+  "variables": {
+    "client_id": "{{env `TF_VAR_client_id`}}",
+    "client_secret": "{{env `TF_VAR_client_secret`}}",
+    "tenant_id": "{{env `TF_VAR_tenant_id`}}",
+    "subscription_id": "{{env `TF_VAR_subscription_id`}}",
+
+    "managed_image_resource_group_name": "{{env `TF_VAR_img_rg_name`}}",
+    "managed_image_name": "{{env `TF_VAR_lin_img_name`}}",
+
+    "os_type": "{{env `TF_VAR_lin_img_os_type`}}",
+    "image_publisher": "{{env `TF_VAR_lin_img_publisher`}}",
+    "image_offer": "{{env `TF_VAR_lin_img_offer`}}",
+    "image_sku": "{{env `TF_VAR_lin_img_sku`}}",
+
+    "Environment":  "{{env `TF_VAR_pcs_app`}}",
+    "Workspace":  "{{env `TF_VAR_workspace`}}",
+    "Organisation":  "{{env `TF_VAR_hhub_lob`}}",
+    "Region":  "{{env `TF_VAR_ae_loc`}}",
+    "AppName":  "{{env `TF_VAR_pcs_app`}}",
+    "BillingIdentifier":  "{{env `billident`}}",
+    "Module":  "{{env `TF_VAR_pcs_app`}}",
+
+    "location": "{{env `TF_VAR_ae_loc`}}",
+    "vm_size": "{{env `TF_VAR_img_vm_size`}}"
+  },
+  "builders": [
+    {
+      "type": "azure-arm",
+
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "tenant_id": "{{user `tenant_id`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+
+      "managed_image_resource_group_name": "{{user `managed_image_resource_group_name`}}",
+      "managed_image_name": "{{user `managed_image_name`}}",
+
+      "os_type": "{{user `os_type`}}",
+      "image_publisher": "{{user `image_publisher`}}",
+      "image_offer": "{{user `image_offer`}}",
+      "image_sku": "{{user `image_sku`}}",
+
+      "azure_tags": {
+            "Environment": "{{user `Environment`}}",
+            "Workspace": "{{user `Workspace`}}",
+            "Organisation": "{{user `Organisation`}}",
+            "Region": "{{user `Region`}}",
+            "AppName": "{{user `AppName`}}",
+            "BillingIdentifier": "{{user `BillingIdentifier`}}",
+            "Module": "{{user `Module`}}"
+      },
+
+      "location": "{{user `location`}}",
+      "vm_size": "{{user `vm_size`}}"
+    }
+],
+  "provisioners": [{
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "apt update",
+      "apt upgrade -y",
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }]
+}
